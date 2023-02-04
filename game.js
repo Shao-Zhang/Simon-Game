@@ -4,48 +4,56 @@ var level = 0;
 var gamePattern = [];
 var userClickPattern = [];
 
+gameStart = false;
 
 
 
-$("body").on("keypress", function (){
-    $("h1").text("Level 0");
-    $("body").off("keypress");
-    nextSequence();
-});
-
-
-$(".btn").click(function(event){
-    var userChosenColour = event.target.id;
-    userClickPattern.push(userChosenColour);
-    playSound(userChosenColour);
-    animatePress(userChosenColour);
-    if (userClickPattern.length === gamePattern.length) {
-        if (checkGameOver(gamePattern, userClickPattern)){
-            alert("game over");
-        }
-        else {
-            userClickPattern.length = 0;
-            playPreviousSequence(gamePattern);
-            nextSequence();
-        }
-        // end game
-    } 
-    else {
-        playPreviousSequence();
+$(document).on("keypress", function (){
+    if (!gameStart) {
+        gameStart = true;
+        $("h1").text("Level 0");
         nextSequence();
     }
 });
 
 
-function playPreviousSequence(gamePattern) {
-    for (color in gamePattern) {
-        var button = $("#"+color);
-        button.fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-        playSound(button);
-        level += 1;
-        $("h1").text("Level " + level);
+$(".btn").click(function(event){
+    if (!gameStart) {
+        displayGameOver();
     }
+    var userChosenColour = event.target.id;
+    userClickPattern.push(userChosenColour);
+    playSound(userChosenColour);
+    animatePress(userChosenColour);
+    if (checkGameOver(gamePattern, userClickPattern)){
+        displayGameOver();
+    }
+    else {
+        userClickPattern.length = [];
+        setTimeout(() => {
+            nextSequence();
+        }, 1000);
+    }
+});
+
+
+function startOver() {
+    level = 0;
+    gamePattern = [];
+
 }
+
+function displayGameOver() {
+    $("h1").text("Game Over, Press Any Key to Restart");
+        $("body").addClass("game-over");
+        playSound("wrong");
+        setTimeout(() => {
+            $("body").removeClass("game-over");
+        }, 200);
+        startOver();
+        gameStart = false;
+}
+
 
 function checkGameOver(gamePattern, playerPattern) {
     var index = 0;
@@ -54,9 +62,10 @@ function checkGameOver(gamePattern, playerPattern) {
             return true
         } 
         else {
-            i += 1;
+            index += 1;
         }
     }
+
     return false
 }
 
