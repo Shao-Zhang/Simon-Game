@@ -25,21 +25,27 @@ $(".btn").click(function(event){
     userClickPattern.push(userChosenColour);
     playSound(userChosenColour);
     animatePress(userChosenColour);
-    if (checkGameOver(gamePattern, userClickPattern)){
+
+
+    if (checkGameOver(gamePattern, userClickPattern)) {
         displayGameOver();
     }
     else {
-        userClickPattern.length = [];
-        setTimeout(() => {
-            nextSequence();
-        }, 1000);
+        if (gamePattern.length === userClickPattern.length) {
+            setTimeout(() => {
+                nextSequence();
+                userClickPattern = [];
+            }, 1000);
+        }
     }
+
 });
 
 
 function startOver() {
     level = 0;
     gamePattern = [];
+    userClickPattern = [];
 
 }
 
@@ -56,17 +62,14 @@ function displayGameOver() {
 
 
 function checkGameOver(gamePattern, playerPattern) {
-    var index = 0;
-    while (index < gamePattern.length){
-        if (gamePattern[index] != playerPattern[index]) {
-            return true
-        } 
-        else {
-            index += 1;
-        }
+
+    if (gamePattern[playerPattern.length - 1] != playerPattern[playerPattern.length - 1]) {
+        return true;
+    }
+    else {
+        return false;
     }
 
-    return false
 }
 
 
